@@ -4,70 +4,93 @@ from datetime import datetime, timedelta
 import pandas as pd
 from collections import defaultdict
 
-# Initialize inventory list in session state to save data entries
+# Initialize session state variables
 if "inventory_list" not in st.session_state:
     st.session_state.inventory_list = []
+if 'decoded_info_dict' not in st.session_state:
+    st.session_state.decoded_info_dict = {}
+
+# Class definitions
+class Product:
+    def __init__(self, name, product_code, calories, expiry_days, quantity=1, owner=None):
+        self.name = name
+        self.product_code = product_code
+        self.calories = calories
+        self.expiry_days = expiry_days
+        self.quantity = quantity
+        self.owner = owner
+
+class ApartmentFridge:
+    def __init__(self):
+        self.products = defaultdict(list)
+
+    def add_product(self, product):
+        if len(self.products[product.owner]) < 10:  # Max 10 products per owner
+            self.products[product.owner].append(product)
+            st.success(f"{product.name} added to {product.owner}'s fridge.")
+        else:
+            st.error(f"{product.owner}'s fridge is full!")
+
+    def remove_product(self, product):
+        if product in self.products[product.owner]:
+            self.products[product.owner].remove(product)
+            st.success(f"{product.name} removed from {product.owner}'s fridge.")
+
+# Function to generate product code
+def generate_product_code(article, owner):
+    # [Your existing generate_product_code logic]
+
+# Function to decode product code
+def decode_product_code(product_code):
+    # [Your existing decode_product_code logic]
+
+# Streamlit UI components
+st.title("Smart Refrigerator Management System")
 
 # File uploader for the Product file
-uploaded_file = st.file_uploader("Upload your product file (CSV format)", type=["csv"])
+uploaded_file = st.sidebar.file_uploader("Upload your product file (CSV format)", type=["csv"])
 if uploaded_file is not None:
-    # Read the uploaded file into a DataFrame
     df = pd.read_csv(uploaded_file)
     st.session_state['product_df'] = df
 else:
-    df = pd.DataFrame(columns=['name', 'product_code', 'calories', 'expiry_days', 'quantity'])
-    st.session_state['product_df'] = df
+    st.sidebar.write("Please upload a CSV file.")
 
-# Initialize classes & subclasses
-# [Your existing class definitions]
+# Product management section
+with st.form("product_management"):
+    st.write("### Manage Your Products")
+    col1, col2 = st.columns(2)
+    with col1:
+        article = st.selectbox("Select Product", st.session_state['product_df']['name'].tolist())
+        owner = st.selectbox("Select Owner", ["A", "B", "C", "D"])
+    with col2:
+        quantity = st.number_input("Quantity", min_value=1, max_value=10, value=1)
+        add_product = st.form_submit_button("Add Product")
+        remove_product = st.form_submit_button("Remove Product")
 
-# ... [Rest of your existing code]
+# Add or remove products
+fridge = ApartmentFridge()
+if add_product:
+    product_code = generate_product_code(article, owner)
+    product = Product(article, product_code, 'calories', 'expiry_days', quantity, owner)
+    fridge.add_product(product)
+    st.session_state.inventory_list.append(product_code)
+elif remove_product:
+    # Logic to remove product
+    # [You need to define how you identify which product to remove]
 
-# Save data to an Excel file
-def save_to_excel(data, file_name='inventory.xlsx'):
-    df = pd.DataFrame(data)
-    df.to_excel(file_name, index=False)
+# Display current inventory
+if st.button("Show Inventory"):
+    for owner, products in fridge.products.items():
+        st.write(f"Owner: {owner}")
+        for product in products:
+            st.write(f" - {product.name} ({product.quantity} pieces)")
 
-# Button to save the inventory list to an Excel file
+# Save inventory to Excel
 if st.button('Save Inventory to Excel'):
     save_to_excel(st.session_state.inventory_list)
     st.success('Inventory saved to Excel file.')
 
-# ... [Rest of your existing code]
-
-# Import relevant libraries
-import streamlit as st
-from datetime import datetime, timedelta
-import pandas as pd
-from collections import defaultdict
-
-# Initialize inventory list in session state to save data entries
-if "inventory_list" not in st.session_state:
-    st.session_state.inventory_list = []
-
-# File upload widget for the Product file
-uploaded_file = st.file_uploader("Upload your product file (CSV format)")
-if uploaded_file is not None:
-    # Read the uploaded file into a DataFrame
-    df = pd.read_csv(uploaded_file)
-else:
-    # Placeholder DataFrame or a message to prompt file upload
-    df = pd.DataFrame()
-    st.write("Please upload a CSV file.")
-
-# Initialize classes & subclasses 
-# ... [Your existing class definitions]
-
-# ... [Rest of your existing code up to the end of streamlit buttons]
-
-# Save data to an Excel file
+# Function to save data to an Excel file
 def save_to_excel(data, file_name='inventory.xlsx'):
     df = pd.DataFrame(data)
     df.to_excel(file_name, index=False)
-
-# End of Streamlit app - call save_to_excel with inventory_list or other data
-if st.button("Save Inventory to Excel"):
-    save_to_excel(st.session_state.inventory_list)
-    st.write("Inventory saved to Excel file.")
-
-# ... [Rest of your existing code]
