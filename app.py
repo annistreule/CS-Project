@@ -2,6 +2,45 @@
 import streamlit as st
 from datetime import datetime, timedelta
 import pandas as pd
+
+# Initialize inventory list in session state
+if "inventory_list" not in st.session_state:
+    st.session_state.inventory_list = []
+
+# Function to save inventory to CSV file
+def save_inventory_to_csv(inventory_list, file_name='products.csv'):
+    inventory_df = pd.DataFrame(inventory_list)
+    inventory_df.to_csv(file_name, index=False)
+    st.success(f'Inventory saved to {file_name}')
+
+# Rest of your code...
+
+# Inside your Streamlit app, after adding a product
+if confirm_button:
+    product_code = generate_product_code(article, owner)
+    product_info = decode_product_code(product_code)
+    st.session_state.inventory_list.append(product_info)
+    st.write(f'You added the product with the following product code: {product_code}')
+    # Save the updated inventory list to CSV
+    save_inventory_to_csv(st.session_state.inventory_list)
+
+# Inside your Streamlit app, after removing a product
+# Assuming you have a way to identify which product to remove
+if remove_item_button:
+    # Logic to remove the product from st.session_state.inventory_list
+    # For example, you can filter out the removed product by its code
+    # Then save the updated inventory list to CSV
+    save_inventory_to_csv(st.session_state.inventory_list)
+
+# Button to manually save inventory to CSV file
+if st.button('Save Inventory to CSV'):
+    save_inventory_to_csv(st.session_state.inventory_list)
+
+# The rest of your Streamlit application code...
+# Import relevant libraries
+import streamlit as st
+from datetime import datetime, timedelta
+import pandas as pd
 from collections import defaultdict
 
 # Initialize session state variables
