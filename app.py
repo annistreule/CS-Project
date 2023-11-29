@@ -1,3 +1,14 @@
+import pandas as pd
+import streamlit as st
+
+# Check if products.csv exists locally, otherwise download it from GitHub
+if not os.path.exists('products.csv'):
+    # Here you would put the code to download the file from GitHub
+    pass
+
+# Read the products.csv into a DataFrame
+products_df = pd.read_csv('products.csv')
+
 # Import relevant libraries
 import streamlit as st
 from datetime import datetime, timedelta
@@ -133,3 +144,13 @@ if st.button('Save Inventory to Excel'):
 def save_to_excel(data, file_name='inventory.xlsx'):
     df = pd.DataFrame(data)
     df.to_excel(file_name, index=False)
+
+# When adding a product, update products_df and save to CSV
+if add_product:
+    # Logic to add product to products_df
+    products_df.to_csv('products.csv', index=False)
+
+# When removing a product, update products_df and save to CSV
+if remove_product:
+    # Logic to remove product from products_df
+    products_df.to_csv('products.csv', index=False)
