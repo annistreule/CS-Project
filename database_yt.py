@@ -10,8 +10,4 @@ data = conn.read(spreadsheet=url, usecols=[0, 1])
 st.dataframe(data)
 
 
-# In[ ]:
-
-
-
 
