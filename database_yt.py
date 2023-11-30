@@ -1,10 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
-# example/st_app.py
 
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
