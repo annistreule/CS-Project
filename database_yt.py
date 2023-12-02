@@ -1,19 +1,18 @@
 import streamlit as st
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+import pandas as pd
 
-# Set up the connection to Google Sheets
-scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('path_to_your_credentials.json', scope)
-client = gspread.authorize(creds)
+# The URL of your public Google Sheet, make sure it's shared as "Anyone with the link can view"
+sheet_url = 'https://docs.google.com/spreadsheets/d/1CLDAFhtriXEMnylxTfOqF27-GH5S9hXELq0WCl-8kb4/edit?usp=sharing'
 
-# Open the Google Sheet
-sheet = client.open("your_google_sheet_name").sheet1
+# Use the pandas library to read the csv data from the Google Sheet
+@st.cache
+def load_data(url):
+    return pd.read_csv(url)
 
-# Get all the records of the data
-records = sheet.get_all_records()
+data = load_data(sheet_url)
 
-# Display the records in the Streamlit app
-st.write(records)
+# Display the dataframe in the Streamlit app
+st.write(data)
+
 
 
