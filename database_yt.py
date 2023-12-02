@@ -10,14 +10,3 @@ def load_data(url):
     return pd.read_csv(url)
 
 data = load_data(sheet_url)
-
-# Display the dataframe in the Streamlit app
-st.write(data)
-
-if st.button('Refresh Data'):
-    st.legacy_caching.clear_cache()
-    data = load_data(sheet_url)
-    st.write(data)
-
-
-
