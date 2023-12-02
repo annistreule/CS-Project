@@ -11,20 +11,13 @@ def load_data(url):
 
 data = load_data(sheet_url)
 
+# Display the dataframe in the Streamlit app
+st.write(data)
 
-import time
-import streamlit as st 
-
-def load_data(url):
-    return pd.read_csv(url)
-
-# Rerun the app every 30 seconds to update the data
-st.write(load_data(sheet_url))
-
-# Use Streamlit's session state to store the last rerun time
-if 'last_rerun' not in st.session_state or time.time() - st.session_state.last_rerun > 30:
-    st.experimental_rerun()
-    st.session_state.last_rerun = time.time()
+if st.button('Refresh Data'):
+    st.legacy_caching.clear_cache()
+    data = load_data(sheet_url)
+    st.write(data)
 
 
 
