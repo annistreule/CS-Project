@@ -1,4 +1,4 @@
-import streamlit as st
+streamlit as st
 import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -20,16 +20,17 @@ client = gspread.authorize(creds)
 # Öffnen Sie das Google Sheet mit seinem Namen oder seiner ID
 sheet = client.open('Database_a').sheet1
 
-# Dekorator für Caching mit einem Zeitlimit (ttl)
-@st.experimental_memo(ttl=300)  # Daten alle 5 Minuten aktualisieren
-def load_data():
+# Dekorator für Caching
+@st.experimental_memo
+def load_data(sheet):
     # Holen Sie sich alle Daten aus dem ersten Blatt Ihrer Tabelle als DataFrame
-    sheet = client.open('Database_a').sheet1
     data = pd.DataFrame(sheet.get_all_records())
     return data
 
-# Lädt die Daten und zeigt sie an
-data = load_data()
+# Lädt die Daten
+data = load_data(sheet)
+
+# Zeigt die Daten in der Streamlit-App an
 st.write(data)
 
 # Felder für die Eingabe neuer Produktinformationen
@@ -38,23 +39,27 @@ expire_date = st.text_input('Expire Date')
 
 # Schaltfläche zum Hinzufügen neuer Daten
 if st.button('Add Product'):
+    # Überprüfen Sie, ob die Felder ausgefüllt sind
     if product_name and expire_date:
+        # Fügt die neuen Daten am Ende des Sheets hinzu
         sheet.append_row([product_name, expire_date])
-        st.experimental_memo.clear()  # Cache löschen, damit die Daten neu geladen werden
+        st.experimental_memo.clear() # Cache löschen, damit die Daten neu geladen werden
         st.success('Product added successfully!')
-        data = load_data()  # Daten neu laden
-        st.write(data)  # Daten anzeigen
+        data = load_data(sheet) # Daten neu laden
+        st.write(data) # Daten anzeigen
     else:
         st.error('Please fill out all fields')
 
 # Schaltfläche zum Entfernen des letzten Produkts
 if st.button('Remove Last Product'):
-    row_count = len(data.index) + 1
-    if row_count > 1:
+    # Anzahl der Zeilen im Sheet
+    row_count = len(data.index) + 1  # +1, weil sheet.get_all_records() die Kopfzeile nicht zählt
+    # Entfernt die letzte Zeile aus dem Sheet
+    if row_count > 1:  # Verhindert das Löschen der Kopfzeile
         sheet.delete_row(row_count)
-        st.experimental_memo.clear()  # Cache löschen, damit die Daten neu geladen werden
+        st.experimental_memo.clear() # Cache löschen, damit die Daten neu geladen werden
         st.success('Last product removed successfully!')
-        data = load_data()  # Daten neu laden
-        st.write(data)  # Daten anzeigen
+        data = load_data(sheet) # Daten neu laden
+        st.write(data) # Daten anzeigen
     else:
         st.error('No products to remove')
