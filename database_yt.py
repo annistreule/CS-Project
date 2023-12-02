@@ -1,5 +1,16 @@
 import streamlit as st
 import pandas as pd
+
+try:
+    import gspread
+    from oauth2client.service_account import ServiceAccountCredentials
+except ImportError as e:
+    st.error(f"Ein Fehler ist beim Importieren aufgetreten: {e}")
+
+# Ihr restlicher Code...
+
+import streamlit as st
+import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
