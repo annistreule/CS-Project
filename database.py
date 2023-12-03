@@ -71,3 +71,40 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+import streamlit as st
+import pandas as pd
+import gspread
+from google.oauth2.service_account import Credentials
+
+# ... (der Rest deines Codes bleibt unverändert)
+
+# Hauptfunktion deiner Streamlit App
+def main():
+    # Authentifiziere den Google Sheets Client
+    gc = authenticate_gspread()
+
+    st.title('Produkte Manager')
+
+    # Lade die Daten
+    data = load_data_from_sheet(gc)
+    st.write('Aktuelle Produkte:', data)
+
+    # Eingabefelder für neue Produkte
+    product_name = st.text_input('Produktname')
+    expire_date = st.text_input('Verfallsdatum')
+
+    # Button, um ein neues Produkt hinzuzufügen
+    if st.button('Produkt hinzufügen'):
+        add_product(gc, product_name, expire_date)
+        st.success('Produkt hinzugefügt!')
+        st.experimental_rerun()
+
+    # Button, um das letzte Produkt zu entfernen
+    if st.button('Letztes Produkt entfernen'):
+        remove_last_product(gc)
+        st.success('Letztes Produkt entfernt!')
+        st.experimental_rerun()
+
+if __name__ == "__main__":
+    main()
