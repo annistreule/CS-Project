@@ -9,10 +9,8 @@ SCOPES = [
     'https://www.googleapis.com/auth/drive'
 ]
 
-# Pfad zu deiner JSON-Anmeldedatei
-# Stelle sicher, dass dieser Pfad auch in deinem Deployment-Umfeld gültig ist.
-# Wenn du in einer Cloud-Umgebung arbeitest, solltest du diese Datei sicher speichern und
-# auf die Credentials über Umgebungsvariablen oder einen anderen sicheren Weg zugreifen.
+# Pfad zu deiner JSON-Anmeldedatei in der Cloud-Umgebung
+# Dieser Pfad muss für deine Cloud-Umgebung gültig sein.
 SERVICE_ACCOUNT_FILE = '/Users/Anina/Desktop/CS/Project/Anina/CS-Project-main/projekt-cs-32b2fba1e1ff.json'
 
 # Funktion, um die Credentials zu erstellen und den Google Sheets Client zu autorisieren
@@ -25,7 +23,7 @@ def authenticate_gspread():
 # Funktion, um Daten von Google Sheets zu laden
 def load_data_from_sheet(sheet_name, worksheet_name):
     gc = authenticate_gspread()
-    worksheet = gc.open(database_A).worksheet(database_A)
+    worksheet = gc.open(sheet_name).worksheet(worksheet_name)
     data = pd.DataFrame(worksheet.get_all_records())
     return data
 
@@ -34,8 +32,8 @@ def main():
     st.title('Google Sheets in Streamlit')
     
     # Name deines Google Sheets und des Arbeitsblatts
-    sheet_name = 'Database_A'
-    worksheet_name = 'Database_A'
+    sheet_name = 'Database_A'  # Ersetze dies mit dem tatsächlichen Namen deines Sheets
+    worksheet_name = 'Sheet1'  # Ersetze dies mit dem tatsächlichen Namen deines Arbeitsblatts
     
     # Lade die Daten
     data = load_data_from_sheet(sheet_name, worksheet_name)
