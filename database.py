@@ -1,10 +1,22 @@
 import streamlit as st
+import pandas as pd
 
-# Diese Funktion wird ausgeführt, wenn die App läuft
+# URL der CSV-Datei
+CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZ1UK4_05AyOBEslc9fbV1zs_7PD40YNJ22847f39SIgLOiKleT70C5HQ--uTjf3-8Afh3NMCG6NsH/pub?output=csv'
+
+@st.cache
+def load_csv(url):
+    # Verwende pandas, um die CSV-Datei direkt aus dem Web zu laden
+    return pd.read_csv(url)
+
 def main():
-    st.write("Anina")  # Dies schreibt "Anina" auf die Streamlit-Seite
+    st.title('CSV-Daten anzeigen')
 
-# Überprüft, ob dieses Skript direkt ausgeführt wird und nicht importiert wird
+    # Daten laden
+    data = load_csv(CSV_URL)
+
+    # Daten in Streamlit anzeigen
+    st.write(data)
+
 if __name__ == "__main__":
     main()
-
