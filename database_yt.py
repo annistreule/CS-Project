@@ -1,18 +1,13 @@
 import streamlit as st
 import pandas as pd
 
+# Versuchen Sie, gspread und oauth2client zu importieren
 try:
     import gspread
     from oauth2client.service_account import ServiceAccountCredentials
 except ImportError as e:
     st.error(f"Ein Fehler ist beim Importieren aufgetreten: {e}")
-
-# Ihr restlicher Code...
-
-import streamlit as st
-import pandas as pd
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+    raise e  # Dies unterbricht die Ausführung des Skripts, falls ein Importfehler auftritt
 
 # Stellen Sie den Umfang der API ein
 scope = [
@@ -50,27 +45,23 @@ expire_date = st.text_input('Expire Date')
 
 # Schaltfläche zum Hinzufügen neuer Daten
 if st.button('Add Product'):
-    # Überprüfen Sie, ob die Felder ausgefüllt sind
     if product_name and expire_date:
-        # Fügt die neuen Daten am Ende des Sheets hinzu
         sheet.append_row([product_name, expire_date])
-        st.experimental_memo.clear() # Cache löschen, damit die Daten neu geladen werden
+        st.experimental_memo.clear()
         st.success('Product added successfully!')
-        data = load_data(sheet) # Daten neu laden
-        st.write(data) # Daten anzeigen
+        data = load_data(sheet)
+        st.write(data)
     else:
         st.error('Please fill out all fields')
 
 # Schaltfläche zum Entfernen des letzten Produkts
 if st.button('Remove Last Product'):
-    # Anzahl der Zeilen im Sheet
-    row_count = len(data.index) + 1  # +1, weil sheet.get_all_records() die Kopfzeile nicht zählt
-    # Entfernt die letzte Zeile aus dem Sheet
-    if row_count > 1:  # Verhindert das Löschen der Kopfzeile
+    row_count = len(data.index) + 1
+    if row_count > 1:
         sheet.delete_row(row_count)
-        st.experimental_memo.clear() # Cache löschen, damit die Daten neu geladen werden
+        st.experimental_memo.clear()
         st.success('Last product removed successfully!')
-        data = load_data(sheet) # Daten neu laden
-        st.write(data) # Daten anzeigen
+        data = load_data(sheet)
+        st.write(data)
     else:
         st.error('No products to remove')
