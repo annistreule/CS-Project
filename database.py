@@ -10,7 +10,7 @@ def load_csv(url):
     return pd.read_csv(url)
 
 def main():
-    st.title('CSV-Daten anzeigen')
+    st.title('Products in the fridge')
 
     # Daten laden
     data = load_csv(CSV_URL)
